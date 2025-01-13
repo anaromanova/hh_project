@@ -1,23 +1,42 @@
-import requests
-
-
-class HH(Parser):
+class Vacancy:
     """
-    Класс для работы с API HeadHunter
-    Класс Parser является родительским классом, который вам необходимо реализовать
-    """
+           Класс для вакансий
+           """
 
-    def __init__(self, file_worker):
-        self.url = 'https://api.hh.ru/vacancies'
-        self.headers = {'User-Agent': 'HH-User-Agent'}
-        self.params = {'text': '', 'page': 0, 'per_page': 100}
-        self.vacancies = []
-        super().__init__(file_worker)
+    def __init__(self, name, vacancy_id, salary, description):
+        self.name = name
+        self.vacancy_id = vacancy_id
+        self.__salary = salary
+        self.description = description
 
-    def load_vacancies(self, keyword):
-        self.params['text'] = keyword
-        while self.params.get('page') != 20:
-            response = requests.get(self.url, headers=self.headers, params=self.params)
-            vacancies = response.json()['items']
-            self.vacancies.extend(vacancies)
-            self.params['page'] += 1
+    @property
+    def salary(self) -> float:
+        return self.__salary
+
+    @salary.setter
+    def salary(self, value) -> None:
+        if value <= 0 or value is None:
+            print('Зарплата не указана или равна 0')
+        self.__salary = value
+
+    def compare_salaries(self, other) -> str:
+        if type(other) is self.__class__:
+            if self.__salary > other.__salary:
+                return f'У {self.vacancy_id} зарплата больше'
+            elif self.__salary < other.__salary:
+                return f'У{other.vacancy_id} зарплата больше'
+            else:
+                return 'У вакансий одинаковые зарплаты'
+        else:
+            raise ValueError('Это не сравнение вакансий!')
+
+
+
+
+
+
+
+test = HH(1)
+test.load_vacancies('Авито Сбербанк разработчик')
+var = test.vacancies
+print(var)
