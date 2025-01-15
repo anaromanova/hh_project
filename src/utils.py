@@ -11,12 +11,12 @@ class Saver(ABC):
         pass
 
     @abstractmethod
-    def get_vacancy(self):
+    def read_file(self):
         """Получение вакансии"""
         pass
 
     @abstractmethod
-    def delete_vacancy(self, vacancy):
+    def delete_vacancies(self):
         """Удаление вакансии"""
         pass
 
@@ -27,7 +27,17 @@ class JSONSaver(Saver):
 
     def __init__(self):
         """Инициализация"""
-        self.vacancies_count = 0
+        self.vacancies_list = []
+
+    def fill_in_the_file(self, vacancies_list):
+        """Функция для записи списка вакансий в файл"""
+        try:
+            with open('data/vacancies.json', 'w', encoding="utf-8") as f:
+                json.dump(vacancies_list, f, ensure_ascii=False)
+        except (FileNotFoundError, ValueError):
+            with open('data/vacancies.json', 'a+', encoding="utf-8") as f:
+                json.dump(vacancies_list, f, ensure_ascii=False)
+                self.vacancies_list.append(vacancies_list)
 
     def add_vacancy(self, vacancy: Vacancy):
         """Добавление вакансии"""
@@ -35,26 +45,26 @@ class JSONSaver(Saver):
             with open('data/vacancies.json', "r", encoding="utf-8") as json_file:
                 file_data = json.loads(json_file.read())
             file_data.append(vacancy)
+            self.vacancies_list.append(file_data)
             with open('data/vacancies.json', 'w', encoding="utf-8") as f:
                 json.dump(file_data, f, ensure_ascii=False)
-            self.vacancies_count += 1
         except (FileNotFoundError, ValueError):
             with open('data/vacancies.json', 'a+', encoding="utf-8") as f:
                 json.dump([vacancy], f, ensure_ascii=False)
-            self.vacancies_count += 1
+                self.vacancies_list.append(vacancy)
 
-    def get_vacancy(self):
-        """Получение вакансии"""
-        pass
-
-    def delete_vacancy(self, vacancy: Vacancy):
-        """Удаление вакансии"""
+    def read_file(self):
+        """Получение вакансий"""
         try:
-            with open('data/vacancies.json', 'r') as json_data:
-                data = json.load(json_data)
-            nd = [i for i in data if i["vacancy_id"] != vacancy.vacancy_id]
-            with open('data/vacancies.json', 'w') as outfile:
-                json.dump(nd, outfile)
-            self.vacancies_count -= 1
+            with open('data/vacancies.json', "r", encoding="UTF-8") as json_file:
+                vacancies = json.loads(json_file.read())
+            self.vacancies_list = [Vacancy(i) for i in vacancies]
+            return self.vacancies_list
         except (FileNotFoundError, ValueError):
-            print('Возможны проблемы с файлом!')
+            return self.vacancies_list
+
+    def delete_vacancies(self):
+        """Удаление вакансий"""
+        with open('data/vacancies.json', 'w'):
+            self.vacancies_list = []
+            pass

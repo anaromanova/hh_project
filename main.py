@@ -1,38 +1,39 @@
-from src.vacancy import Vacancy
+# from src.vacancy import Vacancy
 from src.utils import JSONSaver
 from src.parser import HeadHunterAPI
-
-hh_api = HeadHunterAPI()
-
-# Получение вакансий с hh.ru в формате JSON
-hh_vacancies = hh_api.get_vacancies("Python")
-
-# Преобразование набора данных из JSON в список объектов
-vacancies_list = Vacancy.cast_to_object_list(hh_vacancies)
-
-# Пример работы контструктора класса с одной вакансией
-vacancy = Vacancy("Python Developer", "<https://hh.ru/vacancy/123456>", "100 000-150 000 руб.", "Требования: опыт работы от 3 лет...")
-
-# Сохранение информации о вакансиях в файл
-json_saver = JSONSaver()
-json_saver.add_vacancy(vacancy)
-json_saver.delete_vacancy(vacancy)
+from src.filter_sort import FilterSortVacancies
 
 
-# Функция для взаимодействия с пользователем
 def user_interaction():
+    """Функция для взаимодействия с пользователем"""
+
+    hh_api = HeadHunterAPI()
     search_query = input("Введите поисковый запрос: ")
+    hh_api.load_vacancies(search_query)
+    hh_vacancies = hh_api.get_vacancies()
+
+    json_saver = JSONSaver()
+    json_saver.fill_in_the_file(hh_vacancies)
+
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
-    filter_words = input("Введите ключевые слова для фильтрации вакансий: ").split()
-    salary_range = input("Введите диапазон зарплат: ") # Пример: 100000 - 150000
+    filter_word = input("Введите ключевое слово для фильтрации вакансий: ")
+    filter_salary = int(input("Введите минимальную зарплат: "))
 
-    filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
+    vacancies = json_saver.read_file()
 
-    ranged_vacancies = get_vacancies_by_salary(filtered_vacancies, salary_range)
+    filtered_obj = FilterSortVacancies(filter_word, filter_salary, top_n)
 
-    sorted_vacancies = sort_vacancies(ranged_vacancies)
-    top_vacancies = get_top_vacancies(sorted_vacancies, top_n)
-    print_vacancies(top_vacancies)
+    filtered_by_description = filtered_obj.filter_by_description(vacancies)
+    print(f"Отфильтровано {len(filtered_by_description)} вакансий по описанию")
+
+    filtered_by_salary = filtered_obj.filter_by_salary(filtered_by_description)
+    print(f"Отфильтровано {len(filtered_by_salary)} вакансий по зарплате\n")
+
+    sorted_by_salary = filtered_obj.sort_vacancies_by_salary(filtered_by_salary)
+
+    top_vacancies = filtered_obj.get_top_vacancies(sorted_by_salary)
+
+    print(f"Топ {top_n} вакансий:\n{top_vacancies}\n")
 
 
 if __name__ == "__main__":

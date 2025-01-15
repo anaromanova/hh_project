@@ -1,12 +1,16 @@
 class Vacancy:
     """Класс для вакансий"""
 
-    def __init__(self, name, vacancy_id, salary, description):
+    __slots__ = ("name", "vacancy_id", "__salary", "description")
+
+    def __init__(self, vac):
         """Инициализация"""
-        self.name = name
-        self.vacancy_id = vacancy_id
-        self.__salary = salary
-        self.description = description
+        self.name = vac["name"] if vac["name"] else "Название не указано"
+        self.vacancy_id = vac["alternate_url"] if vac["alternate_url"] else "Ссылка не указана"
+        self.__salary = vac["salary"]["from"] if vac["salary"] and vac["salary"]["from"] else 0
+        self.description = (vac["snippet"]["responsibility"]
+            if vac["snippet"] and vac["snippet"]["responsibility"]
+            else "Описание отсутствует")
 
     @property
     def salary(self) -> float:
