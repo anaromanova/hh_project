@@ -1,9 +1,12 @@
+from typing import Dict
+
+
 class Vacancy:
     """Класс для вакансий"""
 
     __slots__ = ("name", "vacancy_id", "__salary", "description")
 
-    def __init__(self, vac):
+    def __init__(self, vac: Dict) -> None:
         """Инициализация"""
         self.name = vac["name"] if vac["name"] else "Название не указано"
         self.vacancy_id = vac["alternate_url"] if vac["alternate_url"] else "Ссылка не указана"
@@ -18,7 +21,7 @@ class Vacancy:
         return self.__salary
 
     @salary.setter
-    def salary(self, value) -> None:
+    def salary(self, value: int) -> None:
         """Поменять зарплату"""
         if value <= 0 or value is None:
             print('Зарплата не указана или равна 0')

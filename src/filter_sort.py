@@ -7,7 +7,7 @@ class FilterSortVacancies:
     Класс для фильтрации, сортировки и вывода топ вакансий
     """
 
-    def __init__(self, filter_word, filter_salary, top_n):
+    def __init__(self, filter_word, filter_salary, top_n) -> None:
         self.filter_word = filter_word
         self.filter_salary = filter_salary
         self.top_n = top_n

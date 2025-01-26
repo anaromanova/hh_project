@@ -3,7 +3,7 @@ from src.vacancy import Vacancy
 
 
 @pytest.fixture
-def vacancy_1():
+def vacancy_1() -> Vacancy:
     return Vacancy({
         "name": "Junior Python Developer",
         "alternate_url": "https://hh.ru/vacancy/105338726",
@@ -13,7 +13,7 @@ def vacancy_1():
 
 
 @pytest.fixture
-def vacancy_2():
+def vacancy_2() -> Vacancy:
     return Vacancy({
         "name": "Junior Python Developer",
         "alternate_url": "https://hh.ru/vacancy/105338543",
@@ -22,7 +22,7 @@ def vacancy_2():
     })
 
 @pytest.fixture
-def vacancy_3():
+def vacancy_3() -> Vacancy:
     return Vacancy({"name": "Go Developer",
             "alternate_url": "<https://hh.ru/vacancy/123567>",
             "salary": {"from": 150000},
